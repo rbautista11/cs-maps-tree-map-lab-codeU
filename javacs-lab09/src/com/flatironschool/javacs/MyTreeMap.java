@@ -72,8 +72,16 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		Comparable<? super K> k = (Comparable<? super K>) target;
 		
 		// the actual search
-        // TODO: Fill this in.
-        return null;
+        	Node n = root;
+		while(n != null){
+			if(equals(k, n.key))
+				return n;
+			else if(k.compareTo(n.key) > 0)
+				n = n.right;
+			else
+				n = n.left;
+		}
+		return null;
 	}
 
 	/**
@@ -92,6 +100,11 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	@Override
 	public boolean containsValue(Object target) {
+		Collection<V> values_set = values();
+		for(V v: values_set){
+			if(equals(target, v))
+				return true;
+		}
 		return false;
 	}
 
@@ -117,9 +130,20 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 	@Override
 	public Set<K> keySet() {
 		Set<K> set = new LinkedHashSet<K>();
-        // TODO: Fill this in.
+		keySetHelper(root, set);
 		return set;
 	}
+	
+	public void keySetHelper(Node node, Set<K> set){
+		if(node == null)
+			return;
+
+		keySetHelper(node.left, set);
+		set.add(node.key);
+		keySetHelper(node.right, set);
+		
+	}
+
 
 	@Override
 	public V put(K key, V value) {
@@ -135,8 +159,33 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 	}
 
 	private V putHelper(Node node, K key, V value) {
-        // TODO: Fill this in.
-        return null;
+		@SuppressWarnings("unhecked")
+		Comparable<? super K> k = (Comparable<? super K>) key;
+	
+		while(node != null){
+			if(equals(k, node.key)){
+				V old_value = node.value;
+				node.value = value;
+				return old_value;
+			}
+			else if(k.compareTo(node.key) > 0){
+				if(node.right == null){
+					node.right = new Node(key, value);
+					break;
+				}
+				node = node.right;
+			}
+			else{
+				if(node.left == null){
+					node.left = new Node(key, value);
+					break;
+				}
+				node = node.left;
+			}
+		}
+		size++;	
+		return null;
+			
 	}
 
 	@Override
